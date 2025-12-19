@@ -2,6 +2,7 @@ package com.docker_practice.student.ControllerTest;
 
 import com.docker_practice.student.controler.StudentControler;
 import com.docker_practice.student.domain.Students;
+import com.docker_practice.student.exceptionhandler.UserNotFoundException;
 import com.docker_practice.student.service.StudentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,16 @@ public class StudentControllerTest {
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.id").value("1"))
                .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    public void getStudentByIdNotFountIdTest() throws Exception {
+
+
+        when(service.getStudentById("1")).thenThrow(new UserNotFoundException("User Not Found with id : 1"));
+        mockMvc.perform(get("/student/get/{id}", "1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User Not Found with id : 1"));
+
     }
 }
